@@ -8,6 +8,7 @@
             Padding="30,0"
             Spacing="25">
             <Image
+                x:Name="MainImage"
                 Source="dotnet_bot.png"
                 HeightRequest="185"
                 Aspect="AspectFit"
@@ -24,12 +25,10 @@
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
 
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
+            <VerticalStackLayout Padding="20">
+                <Button Text="Lancer le jeu Godot" 
+                    Clicked="OnLaunchGodotClicked"/>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 

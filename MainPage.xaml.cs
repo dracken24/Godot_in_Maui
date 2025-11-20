@@ -1,19 +1,26 @@
 ﻿using System.Diagnostics;
+using PlatformGame.Services;
 
 namespace PlatformGame;
 
 public partial class MainPage : ContentPage
 {
-    public MainPage()
+    private readonly GameApiService _gameApiService;
+
+    public MainPage(GameApiService gameApiService)
     {
         try
         {
             Debug.WriteLine("MainPage: Début de l'initialisation");
+            _gameApiService = gameApiService;
             InitializeComponent();
             Debug.WriteLine("MainPage: Fin de l'initialisation");
             
             // Charger l'image de manière asynchrone pour améliorer les performances
             LoadImageAsync();
+            
+            // Charger les résultats au démarrage (fire and forget)
+            _ = LoadResultsAsync();
         }
         catch (Exception ex)
         {
@@ -37,6 +44,110 @@ public partial class MainPage : ContentPage
         {
             Debug.WriteLine($"LoadImageAsync: Erreur: {ex.Message}");
         }
+    }
+
+    private async Task LoadResultsAsync()
+    {
+        try
+        {
+            LoadingIndicator.IsRunning = true;
+            LoadingIndicator.IsVisible = true;
+
+            Debug.WriteLine("LoadResultsAsync: Début du chargement des résultats");
+
+            // Charger les statistiques
+            try
+            {
+                var stats = await _gameApiService.GetStatsAsync();
+                if (stats != null && stats.TotalAttempts > 0)
+                {
+                    StatsLabel.Text = $"Total de tentatives: {stats.TotalAttempts}\n" +
+                                     $"Temps moyen: {stats.AverageTimeFormatted}\n" +
+                                     $"Meilleur temps: {stats.BestTimeFormatted}";
+                }
+                else
+                {
+                    StatsLabel.Text = "Aucune statistique disponible\n(Aucun résultat enregistré)";
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"LoadResultsAsync: Erreur lors du chargement des statistiques: {ex.Message}");
+                StatsLabel.Text = "Aucune statistique disponible";
+            }
+
+            // Charger le meilleur temps
+            try
+            {
+                var bestResult = await _gameApiService.GetBestResultAsync();
+                if (bestResult != null)
+                {
+                    var playerName = string.IsNullOrEmpty(bestResult.PlayerName) ? "Anonyme" : bestResult.PlayerName;
+                    BestTimeLabel.Text = $"{bestResult.CompletionTimeFormatted}\n" +
+                                        $"Par: {playerName}\n" +
+                                        $"Plateforme: {bestResult.Platform ?? "N/A"}\n" +
+                                        $"Date: {bestResult.CreatedAt:dd/MM/yyyy HH:mm}";
+                }
+                else
+                {
+                    BestTimeLabel.Text = "Aucun résultat enregistré";
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"LoadResultsAsync: Erreur lors du chargement du meilleur résultat: {ex.Message}");
+                BestTimeLabel.Text = "Aucun résultat enregistré";
+            }
+
+            // Charger le top 10
+            try
+            {
+                var topResults = await _gameApiService.GetTopResultsAsync(10);
+                if (topResults != null && topResults.Any())
+                {
+                    var topResultsText = string.Join("\n", topResults.Select((r, index) =>
+                    {
+                        var playerName = string.IsNullOrEmpty(r.PlayerName) ? "Anonyme" : r.PlayerName;
+                        return $"{index + 1}. {r.CompletionTimeFormatted} - {playerName} ({r.Platform ?? "N/A"})";
+                    }));
+                    TopResultsLabel.Text = topResultsText;
+                }
+                else
+                {
+                    TopResultsLabel.Text = "Aucun résultat disponible";
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"LoadResultsAsync: Erreur lors du chargement du top 10: {ex.Message}");
+                TopResultsLabel.Text = "Aucun résultat disponible";
+            }
+
+            LoadingIndicator.IsRunning = false;
+            LoadingIndicator.IsVisible = false;
+
+            Debug.WriteLine("LoadResultsAsync: Fin du chargement des résultats");
+        }
+        catch (Exception ex)
+        {
+            LoadingIndicator.IsRunning = false;
+            LoadingIndicator.IsVisible = false;
+            Debug.WriteLine($"LoadResultsAsync: Erreur: {ex.Message}");
+            Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            
+            await MainThread.InvokeOnMainThreadAsync(async () =>
+            {
+                await DisplayAlert("Erreur", 
+                    $"Impossible de charger les résultats: {ex.Message}\n\n" +
+                    "Vérifiez que l'API est démarrée et accessible.", 
+                    "OK");
+            });
+        }
+    }
+
+    private async void OnRefreshResultsClicked(object sender, EventArgs e)
+    {
+        await LoadResultsAsync();
     }
 
     private void OnLaunchGodotClicked(object sender, EventArgs e)

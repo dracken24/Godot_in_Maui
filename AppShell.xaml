@@ -4,12 +4,30 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:PlatformGame"
+    xmlns:views="clr-namespace:PlatformGame.Views"
     Shell.FlyoutBehavior="Flyout"
     Title="PlatformGame">
 
+    <!-- Menu Item pour la déconnexion (sera géré dans le code-behind) -->
+    <MenuItem Text="Déconnexion"
+              Clicked="OnLogoutClicked" />
+
+    <!-- Page de Connexion (Par défaut car en premier) -->
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+        Title="Connexion"
+        ContentTemplate="{DataTemplate views:LoginPage}"
+        Route="LoginPage" />
+
+    <!-- Page d'Inscription -->
+    <ShellContent
+        Title="Inscription"
+        ContentTemplate="{DataTemplate views:SignUpPage}"
+        Route="SignUpPage" />
+
+    <!-- Page Principale (Jeu) - Sera protégée -->
+    <FlyoutItem Title="Jeu" Route="MainPage">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:MainPage}" />
+    </FlyoutItem>
 
 </Shell>

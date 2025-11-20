@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using PlatformGame.Services;
+using System.Text.Json;
 
 namespace PlatformGame;
 
@@ -82,9 +83,9 @@ public partial class MainPage : ContentPage
                 var bestResult = await _gameApiService.GetBestResultAsync();
                 if (bestResult != null)
                 {
-                    var playerName = string.IsNullOrEmpty(bestResult.PlayerName) ? "Anonyme" : bestResult.PlayerName;
+                    var email = string.IsNullOrEmpty(bestResult.Email) ? "Anonyme" : bestResult.Email;
                     BestTimeLabel.Text = $"{bestResult.CompletionTimeFormatted}\n" +
-                                        $"Par: {playerName}\n" +
+                                        $"Par: {email}\n" +
                                         $"Plateforme: {bestResult.Platform ?? "N/A"}\n" +
                                         $"Date: {bestResult.CreatedAt:dd/MM/yyyy HH:mm}";
                 }
@@ -107,8 +108,8 @@ public partial class MainPage : ContentPage
                 {
                     var topResultsText = string.Join("\n", topResults.Select((r, index) =>
                     {
-                        var playerName = string.IsNullOrEmpty(r.PlayerName) ? "Anonyme" : r.PlayerName;
-                        return $"{index + 1}. {r.CompletionTimeFormatted} - {playerName} ({r.Platform ?? "N/A"})";
+                        var email = string.IsNullOrEmpty(r.Email) ? "Anonyme" : r.Email;
+                        return $"{index + 1}. {r.CompletionTimeFormatted} - {email} ({r.Platform ?? "N/A"})";
                     }));
                     TopResultsLabel.Text = topResultsText;
                 }
@@ -150,19 +151,38 @@ public partial class MainPage : ContentPage
         await LoadResultsAsync();
     }
 
-    private void OnLaunchGodotClicked(object sender, EventArgs e)
+    private async void OnLaunchGodotClicked(object sender, EventArgs e)
     {
         try
         {
             Debug.WriteLine("OnLaunchGodotClicked: Début");
+            
+            // Récupérer l'email de l'utilisateur connecté
+            var userEmail = await SecureStorage.Default.GetAsync("user_email");
+            
+            if (string.IsNullOrEmpty(userEmail))
+            {
+                await DisplayAlert("Erreur", "Vous devez être connecté pour lancer le jeu.", "OK");
+                return;
+            }
+            
+            Debug.WriteLine($"OnLaunchGodotClicked: Email de l'utilisateur: {userEmail}");
+            
+            // Créer un fichier de configuration partagé avec l'email
+            // ATTENDRE que le fichier soit créé et copié avant de lancer le jeu
+            await CreateSharedConfigFile(userEmail);
+            
+            // Attendre un peu pour s'assurer que le fichier est bien copié
+            await Task.Delay(500);
+            
 #if WINDOWS
-            LaunchGodotWindows();
+            LaunchGodotWindows(userEmail);
 #elif MACCATALYST
-            LaunchGodotMac();
+            LaunchGodotMac(userEmail);
 #elif LINUX
-            LaunchGodotLinux();
+            LaunchGodotLinux(userEmail);
 #elif ANDROID
-            LaunchGodotAndroid();
+            LaunchGodotAndroid(userEmail);
 #endif
             Debug.WriteLine("OnLaunchGodotClicked: Fin");
         }
@@ -173,8 +193,136 @@ public partial class MainPage : ContentPage
             DisplayAlert("Erreur", $"Impossible de lancer le jeu: {ex.Message}", "OK");
         }
     }
+    
+    /// <summary>
+    /// Crée un fichier de configuration partagé que Godot peut lire
+    /// </summary>
+    private async Task CreateSharedConfigFile(string email)
+    {
+        try
+        {
+            var config = new
+            {
+                email = email,
+                apiBaseUrl = Environment.GetEnvironmentVariable("API_BASE_URL") ?? "http://10.0.0.49:5000",
+                timestamp = DateTime.UtcNow
+            };
+            
+            var json = JsonSerializer.Serialize(config);
+            
+#if ANDROID
+            // Sur Android, créer le fichier dans plusieurs emplacements pour maximiser les chances
+            var paths = new List<string>();
+            
+            // 1. Dossier Download (accessible sans permissions spéciales)
+            var downloadPath = Path.Combine(
+                Android.OS.Environment.GetExternalStoragePublicDirectory(
+                    Android.OS.Environment.DirectoryDownloads)?.AbsolutePath ?? 
+                "/sdcard/Download",
+                "platformgame_config.json");
+            paths.Add(downloadPath);
+            
+            // 2. Dossier Documents (emplacement original)
+            var documentsPath = Path.Combine(
+                Android.OS.Environment.GetExternalStoragePublicDirectory(
+                    Android.OS.Environment.DirectoryDocuments)?.AbsolutePath ?? 
+                "/storage/emulated/0/Documents",
+                "platformgame_config.json");
+            paths.Add(documentsPath);
+            
+            // Créer le fichier dans tous les emplacements possibles
+            foreach (var filePath in paths)
+            {
+                try
+                {
+                    await File.WriteAllTextAsync(filePath, json);
+                    Debug.WriteLine($"CreateSharedConfigFile: Fichier créé à {filePath}");
+                }
+                catch (Exception pathEx)
+                {
+                    Debug.WriteLine($"CreateSharedConfigFile: Erreur pour {filePath}: {pathEx.Message}");
+                }
+            }
+            
+            // 3. Copier le fichier dans le user data dir de l'app Godot via ADB
+            // (nécessite que l'APK soit en mode debuggable)
+            // Utiliser la même méthode que copy_config_to_godot.ps1 (base64)
+            try
+            {
+                // Encoder le contenu en base64 pour préserver le format JSON
+                var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+                var base64 = Convert.ToBase64String(bytes);
+                
+                var godotUserDataDir = "/data/data/com.company.mygodotgame/files";
+                var targetFile = $"{godotUserDataDir}/platformgame_config.json";
+                
+                // Copier via run-as avec base64 (même méthode que le script PowerShell)
+                var process = new System.Diagnostics.Process
+                {
+                    StartInfo = new System.Diagnostics.ProcessStartInfo
+                    {
+                        FileName = "adb",
+                        Arguments = $"shell \"run-as com.company.mygodotgame sh -c 'echo \\\"{base64}\\\" | base64 -d > {targetFile}'\"",
+                        UseShellExecute = false,
+                        CreateNoWindow = true,
+                        RedirectStandardOutput = true,
+                        RedirectStandardError = true
+                    }
+                };
+                process.Start();
+                await process.WaitForExitAsync();
+                
+                if (process.ExitCode == 0)
+                {
+                    Debug.WriteLine($"CreateSharedConfigFile: Fichier copié dans {targetFile}");
+                }
+                else
+                {
+                    var error = await process.StandardError.ReadToEndAsync();
+                    var output = await process.StandardOutput.ReadToEndAsync();
+                    Debug.WriteLine($"CreateSharedConfigFile: Erreur ADB (peut nécessiter mode debuggable): {error}");
+                    Debug.WriteLine($"CreateSharedConfigFile: Output: {output}");
+                    
+                    // Si run-as ne fonctionne pas, essayer avec le script PowerShell
+                    Debug.WriteLine("CreateSharedConfigFile: Tentative avec le script PowerShell...");
+                    var psProcess = new System.Diagnostics.Process
+                    {
+                        StartInfo = new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = "powershell",
+                            Arguments = "-ExecutionPolicy Bypass -File \"copy_config_to_godot.ps1\"",
+                            UseShellExecute = false,
+                            CreateNoWindow = true,
+                            WorkingDirectory = AppContext.BaseDirectory
+                        }
+                    };
+                    psProcess.Start();
+                    await psProcess.WaitForExitAsync();
+                }
+            }
+            catch (Exception adbEx)
+            {
+                Debug.WriteLine($"CreateSharedConfigFile: Erreur lors de la copie via ADB: {adbEx.Message}");
+                // Ne pas bloquer si ADB ne fonctionne pas
+            }
+            
+            Debug.WriteLine($"CreateSharedConfigFile: Contenu: {json}");
+#else
+            // Pour Windows/Mac/Linux, utiliser le dossier temporaire
+            var filePath = Path.Combine(Path.GetTempPath(), "platformgame_config.json");
+            await File.WriteAllTextAsync(filePath, json);
+            Debug.WriteLine($"CreateSharedConfigFile: Fichier créé à {filePath}");
+            Debug.WriteLine($"CreateSharedConfigFile: Contenu: {json}");
+#endif
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"CreateSharedConfigFile: Erreur lors de la création du fichier: {ex.Message}");
+            // Ne pas bloquer le lancement si le fichier ne peut pas être créé
+        }
+    }
 
-    void LaunchGodotWindows()
+    void LaunchGodotWindows(string email)
     {
         var path = Path.Combine(AppContext.BaseDirectory, "Godot", "MyGodotGame.exe");
 
@@ -187,31 +335,35 @@ public partial class MainPage : ContentPage
         Process.Start(new ProcessStartInfo
         {
             FileName = path,
+            Arguments = $"--email \"{email}\"",
             UseShellExecute = true
         });
     }
 
-    void LaunchGodotMac()
+    void LaunchGodotMac(string email)
     {
-        var path = Path.Combine(AppContext.BaseDirectory, "Godot", "MyGodotGame.apk");
+        var path = Path.Combine(AppContext.BaseDirectory, "Godot", "MyGodotGame.app");
 
+        // Sur Mac, on peut passer l'email via des arguments ou un fichier de configuration
+        // Le fichier de configuration est déjà créé par CreateSharedConfigFile
         Process.Start("open", $"\"{path}\"");
     }
 
-    void LaunchGodotLinux()
+    void LaunchGodotLinux(string email)
     {
         var path = Path.Combine(AppContext.BaseDirectory, "Godot", "MyGodotGame.x86_64");
 
         Process.Start(new ProcessStartInfo
         {
             FileName = path,
+            Arguments = $"--email \"{email}\"",
             UseShellExecute = true
         });
     }
 
 #if ANDROID
 
-    void LaunchGodotAndroid()
+    void LaunchGodotAndroid(string email)
     {
         try
         {
@@ -220,6 +372,7 @@ public partial class MainPage : ContentPage
             var activityName = "com.godot.game.GodotApp"; // Activité principale de Godot
             
             Debug.WriteLine($"LaunchGodotAndroid: Recherche du package {packageName}");
+            Debug.WriteLine($"LaunchGodotAndroid: Email à transmettre: {email}");
 
             var packageManager = Android.App.Application.Context.PackageManager;
             if (packageManager == null)
@@ -268,6 +421,11 @@ public partial class MainPage : ContentPage
                 return;
             }
 
+            // Ajouter l'email comme extra dans l'Intent
+            intent.PutExtra("user_email", email);
+            intent.PutExtra("api_base_url", Environment.GetEnvironmentVariable("API_BASE_URL") ?? "http://10.0.0.49:5000");
+            Debug.WriteLine($"LaunchGodotAndroid: Email ajouté comme extra dans l'Intent: {email}");
+
             // Vérifier si l'activité peut être résolue (mais ne pas bloquer si ça échoue)
             var resolveInfo = packageManager.ResolveActivity(intent, Android.Content.PM.PackageInfoFlags.MatchDefaultOnly);
             if (resolveInfo == null)
@@ -281,6 +439,9 @@ public partial class MainPage : ContentPage
                 intent.SetPackage(packageName);
                 intent.AddCategory(Android.Content.Intent.CategoryLauncher);
                 intent.SetFlags(Android.Content.ActivityFlags.NewTask | Android.Content.ActivityFlags.ResetTaskIfNeeded);
+                // Réajouter les extras
+                intent.PutExtra("user_email", email);
+                intent.PutExtra("api_base_url", Environment.GetEnvironmentVariable("API_BASE_URL") ?? "http://10.0.0.49:5000");
             }
 
             Debug.WriteLine($"LaunchGodotAndroid: Lancement de l'application {packageName}");

@@ -3,7 +3,7 @@
 
 CREATE TABLE IF NOT EXISTS game_results (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    player_name TEXT,
+    email TEXT,
     completion_time_ms BIGINT NOT NULL,
     completion_time_formatted TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

@@ -63,7 +63,7 @@ public class GameResultsController : ControllerBase
             var results = response.Models.Select(r => new GameResultResponse
             {
                 Id = r.Id,
-                PlayerName = r.PlayerName,
+                Email = r.Email,
                 CompletionTimeMs = r.CompletionTimeMs,
                 CompletionTimeFormatted = r.CompletionTimeFormatted,
                 CreatedAt = r.CreatedAt,
@@ -107,7 +107,7 @@ public class GameResultsController : ControllerBase
             var result = new GameResultResponse
             {
                 Id = bestResult.Id,
-                PlayerName = bestResult.PlayerName,
+                Email = bestResult.Email,
                 CompletionTimeMs = bestResult.CompletionTimeMs,
                 CompletionTimeFormatted = bestResult.CompletionTimeFormatted,
                 CreatedAt = bestResult.CreatedAt,
@@ -146,7 +146,7 @@ public class GameResultsController : ControllerBase
             var results = response.Models.Select(r => new GameResultResponse
             {
                 Id = r.Id,
-                PlayerName = r.PlayerName,
+                Email = r.Email,
                 CompletionTimeMs = r.CompletionTimeMs,
                 CompletionTimeFormatted = r.CompletionTimeFormatted,
                 CreatedAt = r.CreatedAt,
@@ -181,7 +181,7 @@ public class GameResultsController : ControllerBase
             var gameResult = new GameResult
             {
                 Id = Guid.NewGuid(),
-                PlayerName = request.PlayerName,
+                Email = request.Email,
                 CompletionTimeMs = request.CompletionTimeMs,
                 CompletionTimeFormatted = formattedTime,
                 CreatedAt = DateTime.UtcNow,
@@ -202,7 +202,7 @@ public class GameResultsController : ControllerBase
             var result = new GameResultResponse
             {
                 Id = insertedResult.Id,
-                PlayerName = insertedResult.PlayerName,
+                Email = insertedResult.Email,
                 CompletionTimeMs = insertedResult.CompletionTimeMs,
                 CompletionTimeFormatted = insertedResult.CompletionTimeFormatted,
                 CreatedAt = insertedResult.CreatedAt,
@@ -259,7 +259,7 @@ public class GameResultsController : ControllerBase
                 BestResult = new GameResultResponse
                 {
                     Id = bestResult.Id,
-                    PlayerName = bestResult.PlayerName,
+                    Email = bestResult.Email,
                     CompletionTimeMs = bestResult.CompletionTimeMs,
                     CompletionTimeFormatted = bestResult.CompletionTimeFormatted,
                     CreatedAt = bestResult.CreatedAt,

@@ -1,112 +1,72 @@
-﻿[2025-11-20 18:45:00.351] [UserEmailManager] _Ready() appele - TEST FORCE
-[2025-11-20 18:45:00.475] 
-[UserEmailManager] Recherche du fichier de configuration dans 5 emplacements...
-[2025-11-20 18:45:00.496] [UserEmailManager] User data dir: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:45:00.515] [UserEmailManager] Chemin user:// devrait pointer vers: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:45:00.528] 
-[2025-11-20 18:45:00.550] [UserEmailManager] Verification: user://platformgame_config.json
-[2025-11-20 18:45:00.569] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: user://platformgame_config.json
-[2025-11-20 18:45:00.588] [UserEmailManager] Verification: /data/data/com.company.mygodotgame/files/platformgame_config.json
-[2025-11-20 18:45:00.609] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /data/data/com.company.mygodotgame/files/platformgame_config.json
-[2025-11-20 18:45:00.627] [UserEmailManager] Verification: /sdcard/Download/platformgame_config.json
-[2025-11-20 18:45:00.651] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Download/platformgame_config.json
-[2025-11-20 18:45:00.667] [UserEmailManager] Verification: /storage/emulated/0/Documents/platformgame_config.json
-[2025-11-20 18:45:00.679] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Documents/platformgame_config.json
-[2025-11-20 18:45:00.693] [UserEmailManager] Verification: /sdcard/Documents/platformgame_config.json
-[2025-11-20 18:45:00.709] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Documents/platformgame_config.json
-[2025-11-20 18:45:00.719] 
-[2025-11-20 18:45:00.728] ERROR: [UserEmailManager] [ERREUR] Aucun fichier de configuration trouve ou email vide!
-[2025-11-20 18:45:00.735] [UserEmailManager] Email de l'utilisateur: 
-[2025-11-20 18:45:00.742] [UserEmailManager] URL de l'API: http://10.0.0.49:5000
-[2025-11-20 18:45:00.749] [UserEmailManager] Email charge: 
-[2025-11-20 18:45:00.758] [End] [End] UserEmailManager trouve. Email: 
-[2025-11-20 18:45:03.943] [End] [End] Player entered End
-[2025-11-20 18:45:03.957] [End] [End] Enregistrement du score: 3139ms
-[2025-11-20 18:45:03.963] [End] [End] Email utilisateur: 
-[2025-11-20 18:45:03.967] [End] [End] URL API: http://10.0.0.49:5000
-[2025-11-20 18:45:03.971] [End] ERROR: [End] ATTENTION: Email utilisateur vide! Le score ne sera pas enregistre.
-[2025-11-20 18:45:03.980] [End] ERROR: [End] Verifiez que le UserEmailManager a charge le fichier de configuration.
-[2025-11-20 18:45:06.474] [UserEmailManager] _Ready() appele - TEST FORCE
-[2025-11-20 18:45:06.484] 
-[UserEmailManager] Recherche du fichier de configuration dans 5 emplacements...
-[2025-11-20 18:45:06.491] [UserEmailManager] User data dir: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:45:06.499] [UserEmailManager] Chemin user:// devrait pointer vers: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:45:06.506] 
-[2025-11-20 18:45:06.514] [UserEmailManager] Verification: user://platformgame_config.json
-[2025-11-20 18:45:06.521] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: user://platformgame_config.json
-[2025-11-20 18:45:06.529] [UserEmailManager] Verification: /data/data/com.company.mygodotgame/files/platformgame_config.json
-[2025-11-20 18:45:06.539] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /data/data/com.company.mygodotgame/files/platformgame_config.json
-[2025-11-20 18:45:06.549] [UserEmailManager] Verification: /sdcard/Download/platformgame_config.json
-[2025-11-20 18:45:06.562] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Download/platformgame_config.json
-[2025-11-20 18:45:06.571] [UserEmailManager] Verification: /storage/emulated/0/Documents/platformgame_config.json
-[2025-11-20 18:45:06.580] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Documents/platformgame_config.json
-[2025-11-20 18:45:06.586] [UserEmailManager] Verification: /sdcard/Documents/platformgame_config.json
-[2025-11-20 18:45:06.595] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Documents/platformgame_config.json
-[2025-11-20 18:45:06.603] 
-[2025-11-20 18:45:06.610] ERROR: [UserEmailManager] [ERREUR] Aucun fichier de configuration trouve ou email vide!
-[2025-11-20 18:45:06.622] [UserEmailManager] Email de l'utilisateur: 
-[2025-11-20 18:45:06.637] [UserEmailManager] URL de l'API: http://10.0.0.49:5000
-[2025-11-20 18:45:06.654] [UserEmailManager] Email charge: 
-[2025-11-20 18:45:06.675] [End] [End] UserEmailManager trouve. Email: 
-[2025-11-20 18:45:09.625] [End] [End] Player entered End
-[2025-11-20 18:45:09.638] [End] [End] Enregistrement du score: 2926ms
-[2025-11-20 18:45:09.646] [End] [End] Email utilisateur: 
-[2025-11-20 18:45:09.652] [End] [End] URL API: http://10.0.0.49:5000
-[2025-11-20 18:45:09.658] [End] ERROR: [End] ATTENTION: Email utilisateur vide! Le score ne sera pas enregistre.
-[2025-11-20 18:45:09.665] [End] ERROR: [End] Verifiez que le UserEmailManager a charge le fichier de configuration.
-[2025-11-20 18:46:19.815] [UserEmailManager] _Ready() appele - TEST FORCE
-[2025-11-20 18:46:19.906] 
-[UserEmailManager] Recherche du fichier de configuration dans 5 emplacements...
-[2025-11-20 18:46:19.914] [UserEmailManager] User data dir: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:46:19.924] [UserEmailManager] Chemin user:// devrait pointer vers: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:46:19.933] 
-[2025-11-20 18:46:19.941] [UserEmailManager] Verification: user://platformgame_config.json
-[2025-11-20 18:46:19.948] 
-[UserEmailManager] [OK] Fichier trouve et accessible: user://platformgame_config.json
-[2025-11-20 18:46:19.955] [UserEmailManager] Contenu du fichier: {"email":"dracken24@gmail.com","apiBaseUrl":"http://10.0.0.49:5000","timestamp":"2025-11-20T23:44:57.3873009Z"}
-[2025-11-20 18:46:19.962] 
-[2025-11-20 18:46:19.976] 
-[UserEmailManager] [OK] Email charge depuis le fichier: dracken24@gmail.com
-[2025-11-20 18:46:19.989] [UserEmailManager] [OK] URL API chargee depuis le fichier: http://10.0.0.49:5000
-[2025-11-20 18:46:20.001] 
-[2025-11-20 18:46:20.015] 
-[UserEmailManager] [SUCCES] Configuration chargee avec succes!
-[2025-11-20 18:46:20.028] [UserEmailManager] Email de l'utilisateur: dracken24@gmail.com
-[2025-11-20 18:46:20.041] [UserEmailManager] URL de l'API: http://10.0.0.49:5000
-[2025-11-20 18:46:20.055] [UserEmailManager] Email charge: dracken24@gmail.com
-[2025-11-20 18:46:20.071] [End] [End] UserEmailManager trouve. Email: dracken24@gmail.com
-[2025-11-20 18:46:29.740] [End] [End] Player entered End
-[2025-11-20 18:46:29.758] [End] [End] Enregistrement du score: 9616ms
-[2025-11-20 18:46:29.764] [End] [End] Email utilisateur: dracken24@gmail.com
-[2025-11-20 18:46:29.770] [End] [End] URL API: http://10.0.0.49:5000
-[2025-11-20 18:46:29.789] [UserEmailManager] Requ├¬te HTTP envoy├®e pour enregistrer le score: 9616ms
-[2025-11-20 18:46:30.533] [UserEmailManager] OK Score enregistre avec succes!
-[2025-11-20 18:46:30.545] [UserEmailManager] Reponse: {"id":"6cf43a91-981c-445e-88e5-a4687cc3caea","email":"dracken24@gmail.com","completionTimeMs":9616,"completionTimeFormatted":"9.616","createdAt":"2025-11-20T18:46:31","platform":"Android"}
-[2025-11-20 18:46:32.280] [UserEmailManager] _Ready() appele - TEST FORCE
-[2025-11-20 18:46:32.289] 
-[UserEmailManager] Recherche du fichier de configuration dans 5 emplacements...
-[2025-11-20 18:46:32.297] [UserEmailManager] User data dir: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:46:32.307] [UserEmailManager] Chemin user:// devrait pointer vers: /data/data/com.company.mygodotgame/files
-[2025-11-20 18:46:32.316] 
-[2025-11-20 18:46:32.323] [UserEmailManager] Verification: user://platformgame_config.json
-[2025-11-20 18:46:32.332] 
-[UserEmailManager] [OK] Fichier trouve et accessible: user://platformgame_config.json
-[2025-11-20 18:46:32.343] [UserEmailManager] Contenu du fichier: {"email":"dracken24@gmail.com","apiBaseUrl":"http://10.0.0.49:5000","timestamp":"2025-11-20T23:46:18.2035786Z"}
-[2025-11-20 18:46:32.360] 
-[2025-11-20 18:46:32.378] 
-[UserEmailManager] [OK] Email charge depuis le fichier: dracken24@gmail.com
-[2025-11-20 18:46:32.394] [UserEmailManager] [OK] URL API chargee depuis le fichier: http://10.0.0.49:5000
-[2025-11-20 18:46:32.408] 
-[2025-11-20 18:46:32.425] 
-[UserEmailManager] [SUCCES] Configuration chargee avec succes!
-[2025-11-20 18:46:32.446] [UserEmailManager] Email de l'utilisateur: dracken24@gmail.com
-[2025-11-20 18:46:32.467] [UserEmailManager] URL de l'API: http://10.0.0.49:5000
-[2025-11-20 18:46:32.486] [UserEmailManager] Email charge: dracken24@gmail.com
-[2025-11-20 18:46:32.507] [End] [End] UserEmailManager trouve. Email: dracken24@gmail.com
-[2025-11-20 18:46:35.114] [End] [End] Player entered End
-[2025-11-20 18:46:35.122] [End] [End] Enregistrement du score: 2586ms
-[2025-11-20 18:46:35.126] [End] [End] Email utilisateur: dracken24@gmail.com
-[2025-11-20 18:46:35.130] [End] [End] URL API: http://10.0.0.49:5000
-[2025-11-20 18:46:35.135] [UserEmailManager] Requ├¬te HTTP envoy├®e pour enregistrer le score: 2586ms
-[2025-11-20 18:46:35.374] [UserEmailManager] OK Score enregistre avec succes!
-[2025-11-20 18:46:35.392] [UserEmailManager] Reponse: {"id":"1336e9b6-ee24-4d61-ab72-ca2920dffd42","email":"dracken24@gmail.com","completionTimeMs":2586,"completionTimeFormatted":"2.586","createdAt":"2025-11-20T18:46:36","platform":"Android"}
+﻿[2025-11-20 20:09:09.790] [UserEmailManager] _Ready() appele - TEST FORCE
+[2025-11-20 20:09:09.910] [UserEmailManager] Plugin IntentExtrasPlugin non trouv├®
+[2025-11-20 20:09:09.923] [UserEmailManager] Tentative de lecture directe via JNI...
+[2025-11-20 20:09:09.948] 
+[UserEmailManager] Recherche du fichier de configuration dans 8 emplacements...
+[2025-11-20 20:09:09.973] [UserEmailManager] User data dir: /data/data/com.company.mygodotgame/files
+[2025-11-20 20:09:10.000] [UserEmailManager] Chemin user:// devrait pointer vers: /data/data/com.company.mygodotgame/files
+[2025-11-20 20:09:10.023] 
+[2025-11-20 20:09:10.040] [UserEmailManager] Verification: /storage/emulated/0/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:10.083] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:10.094] [UserEmailManager] Verification: /sdcard/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:10.118] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:10.127] [UserEmailManager] Verification: /storage/emulated/0/Download/platformgame_config.json
+[2025-11-20 20:09:10.136] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Download/platformgame_config.json
+[2025-11-20 20:09:10.147] [UserEmailManager] Verification: /sdcard/Download/platformgame_config.json
+[2025-11-20 20:09:10.164] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Download/platformgame_config.json
+[2025-11-20 20:09:10.181] [UserEmailManager] Verification: user://platformgame_config.json
+[2025-11-20 20:09:10.209] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: user://platformgame_config.json
+[2025-11-20 20:09:10.233] [UserEmailManager] Verification: /data/data/com.company.mygodotgame/files/platformgame_config.json
+[2025-11-20 20:09:10.253] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /data/data/com.company.mygodotgame/files/platformgame_config.json
+[2025-11-20 20:09:10.267] [UserEmailManager] Verification: /storage/emulated/0/Documents/platformgame_config.json
+[2025-11-20 20:09:10.289] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Documents/platformgame_config.json
+[2025-11-20 20:09:10.302] [UserEmailManager] Verification: /sdcard/Documents/platformgame_config.json
+[2025-11-20 20:09:10.311] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Documents/platformgame_config.json
+[2025-11-20 20:09:10.321] 
+[2025-11-20 20:09:10.336] ERROR: [UserEmailManager] [ERREUR] Aucun fichier de configuration trouve ou email vide!
+[2025-11-20 20:09:10.359] [UserEmailManager] Email de l'utilisateur: 
+[2025-11-20 20:09:10.375] [UserEmailManager] URL de l'API: http://10.0.0.49:5000
+[2025-11-20 20:09:10.395] [UserEmailManager] Email charge: 
+[2025-11-20 20:09:10.428] [End] [End] UserEmailManager trouve. Email: 
+[2025-11-20 20:09:13.819] [End] [End] Player entered End
+[2025-11-20 20:09:13.847] [End] [End] Enregistrement du score: 3335ms
+[2025-11-20 20:09:13.853] [End] [End] Email utilisateur: 
+[2025-11-20 20:09:13.859] [End] [End] URL API: http://10.0.0.49:5000
+[2025-11-20 20:09:13.864] [End] ERROR: [End] ATTENTION: Email utilisateur vide! Le score ne sera pas enregistre.
+[2025-11-20 20:09:13.870] [End] ERROR: [End] Verifiez que le UserEmailManager a charge le fichier de configuration.
+[2025-11-20 20:09:16.363] [UserEmailManager] _Ready() appele - TEST FORCE
+[2025-11-20 20:09:16.373] [UserEmailManager] Plugin IntentExtrasPlugin non trouv├®
+[2025-11-20 20:09:16.380] [UserEmailManager] Tentative de lecture directe via JNI...
+[2025-11-20 20:09:16.387] 
+[UserEmailManager] Recherche du fichier de configuration dans 8 emplacements...
+[2025-11-20 20:09:16.394] [UserEmailManager] User data dir: /data/data/com.company.mygodotgame/files
+[2025-11-20 20:09:16.402] [UserEmailManager] Chemin user:// devrait pointer vers: /data/data/com.company.mygodotgame/files
+[2025-11-20 20:09:16.409] 
+[2025-11-20 20:09:16.416] [UserEmailManager] Verification: /storage/emulated/0/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:16.432] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:16.440] [UserEmailManager] Verification: /sdcard/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:16.459] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Android/data/com.companyname.platformgame/cache/platformgame_config.json
+[2025-11-20 20:09:16.469] [UserEmailManager] Verification: /storage/emulated/0/Download/platformgame_config.json
+[2025-11-20 20:09:16.487] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Download/platformgame_config.json
+[2025-11-20 20:09:16.507] [UserEmailManager] Verification: /sdcard/Download/platformgame_config.json
+[2025-11-20 20:09:16.527] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Download/platformgame_config.json
+[2025-11-20 20:09:16.545] [UserEmailManager] Verification: user://platformgame_config.json
+[2025-11-20 20:09:16.565] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: user://platformgame_config.json
+[2025-11-20 20:09:16.580] [UserEmailManager] Verification: /data/data/com.company.mygodotgame/files/platformgame_config.json
+[2025-11-20 20:09:16.595] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /data/data/com.company.mygodotgame/files/platformgame_config.json
+[2025-11-20 20:09:16.614] [UserEmailManager] Verification: /storage/emulated/0/Documents/platformgame_config.json
+[2025-11-20 20:09:16.631] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /storage/emulated/0/Documents/platformgame_config.json
+[2025-11-20 20:09:16.645] [UserEmailManager] Verification: /sdcard/Documents/platformgame_config.json
+[2025-11-20 20:09:16.663] [UserEmailManager] [ECHEC] Fichier non trouve ou inaccessible: /sdcard/Documents/platformgame_config.json
+[2025-11-20 20:09:16.682] 
+[2025-11-20 20:09:16.702] ERROR: [UserEmailManager] [ERREUR] Aucun fichier de configuration trouve ou email vide!
+[2025-11-20 20:09:16.718] [UserEmailManager] Email de l'utilisateur: 
+[2025-11-20 20:09:16.732] [UserEmailManager] URL de l'API: http://10.0.0.49:5000
+[2025-11-20 20:09:16.749] [UserEmailManager] Email charge: 
+[2025-11-20 20:09:16.768] [End] [End] UserEmailManager trouve. Email: 
+[2025-11-20 20:09:19.541] [End] [End] Player entered End
+[2025-11-20 20:09:19.552] [End] [End] Enregistrement du score: 2749ms
+[2025-11-20 20:09:19.558] [End] [End] Email utilisateur: 
+[2025-11-20 20:09:19.565] [End] [End] URL API: http://10.0.0.49:5000
+[2025-11-20 20:09:19.572] [End] ERROR: [End] ATTENTION: Email utilisateur vide! Le score ne sera pas enregistre.
+[2025-11-20 20:09:19.578] [End] ERROR: [End] Verifiez que le UserEmailManager a charge le fichier de configuration.

@@ -169,11 +169,14 @@ public partial class MainPage : ContentPage
             Debug.WriteLine($"OnLaunchGodotClicked: Email de l'utilisateur: {userEmail}");
             
             // Créer un fichier de configuration partagé avec l'email
+            // IMPORTANT: Ce fichier est recréé à CHAQUE lancement pour garantir
+            // que le bon email (celui de l'utilisateur actuellement connecté) est utilisé
             // ATTENDRE que le fichier soit créé et copié avant de lancer le jeu
             await CreateSharedConfigFile(userEmail);
             
-            // Attendre un peu pour s'assurer que le fichier est bien copié
-            await Task.Delay(500);
+            // Attendre un peu plus pour s'assurer que le fichier est bien copié et vérifié
+            // Le délai est important car la copie via ADB peut prendre du temps
+            await Task.Delay(1500);
             
 #if WINDOWS
             LaunchGodotWindows(userEmail);
@@ -190,7 +193,7 @@ public partial class MainPage : ContentPage
         {
             Debug.WriteLine($"OnLaunchGodotClicked: Erreur: {ex.Message}");
             Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-            DisplayAlert("Erreur", $"Impossible de lancer le jeu: {ex.Message}", "OK");
+            _ = DisplayAlert("Erreur", $"Impossible de lancer le jeu: {ex.Message}", "OK");
         }
     }
     
@@ -212,9 +215,14 @@ public partial class MainPage : ContentPage
             
 #if ANDROID
             // Sur Android, créer le fichier dans plusieurs emplacements pour maximiser les chances
+            // NOTE: Le plugin Android Intent Extras est maintenant la méthode principale,
+            // mais on garde le fichier comme solution de secours
             var paths = new List<string>();
             
-            // 1. Dossier Download (accessible sans permissions spéciales)
+            // NOTE: Le plugin Android Intent Extras est maintenant la méthode principale.
+            // Le fichier est créé uniquement comme solution de secours.
+            
+            // 1. Dossier Download (accessible sans permissions spéciales sur certaines versions)
             var downloadPath = Path.Combine(
                 Android.OS.Environment.GetExternalStoragePublicDirectory(
                     Android.OS.Environment.DirectoryDownloads)?.AbsolutePath ?? 
@@ -222,7 +230,7 @@ public partial class MainPage : ContentPage
                 "platformgame_config.json");
             paths.Add(downloadPath);
             
-            // 2. Dossier Documents (emplacement original)
+            // 4. Dossier Documents (emplacement original)
             var documentsPath = Path.Combine(
                 Android.OS.Environment.GetExternalStoragePublicDirectory(
                     Android.OS.Environment.DirectoryDocuments)?.AbsolutePath ?? 
@@ -235,6 +243,13 @@ public partial class MainPage : ContentPage
             {
                 try
                 {
+                    // Créer le répertoire parent s'il n'existe pas
+                    var dir = Path.GetDirectoryName(filePath);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+                    
                     await File.WriteAllTextAsync(filePath, json);
                     Debug.WriteLine($"CreateSharedConfigFile: Fichier créé à {filePath}");
                 }
@@ -244,68 +259,11 @@ public partial class MainPage : ContentPage
                 }
             }
             
-            // 3. Copier le fichier dans le user data dir de l'app Godot via ADB
-            // (nécessite que l'APK soit en mode debuggable)
-            // Utiliser la même méthode que copy_config_to_godot.ps1 (base64)
-            try
-            {
-                // Encoder le contenu en base64 pour préserver le format JSON
-                var bytes = System.Text.Encoding.UTF8.GetBytes(json);
-                var base64 = Convert.ToBase64String(bytes);
-                
-                var godotUserDataDir = "/data/data/com.company.mygodotgame/files";
-                var targetFile = $"{godotUserDataDir}/platformgame_config.json";
-                
-                // Copier via run-as avec base64 (même méthode que le script PowerShell)
-                var process = new System.Diagnostics.Process
-                {
-                    StartInfo = new System.Diagnostics.ProcessStartInfo
-                    {
-                        FileName = "adb",
-                        Arguments = $"shell \"run-as com.company.mygodotgame sh -c 'echo \\\"{base64}\\\" | base64 -d > {targetFile}'\"",
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    }
-                };
-                process.Start();
-                await process.WaitForExitAsync();
-                
-                if (process.ExitCode == 0)
-                {
-                    Debug.WriteLine($"CreateSharedConfigFile: Fichier copié dans {targetFile}");
-                }
-                else
-                {
-                    var error = await process.StandardError.ReadToEndAsync();
-                    var output = await process.StandardOutput.ReadToEndAsync();
-                    Debug.WriteLine($"CreateSharedConfigFile: Erreur ADB (peut nécessiter mode debuggable): {error}");
-                    Debug.WriteLine($"CreateSharedConfigFile: Output: {output}");
-                    
-                    // Si run-as ne fonctionne pas, essayer avec le script PowerShell
-                    Debug.WriteLine("CreateSharedConfigFile: Tentative avec le script PowerShell...");
-                    var psProcess = new System.Diagnostics.Process
-                    {
-                        StartInfo = new System.Diagnostics.ProcessStartInfo
-                        {
-                            FileName = "powershell",
-                            Arguments = "-ExecutionPolicy Bypass -File \"copy_config_to_godot.ps1\"",
-                            UseShellExecute = false,
-                            CreateNoWindow = true,
-                            WorkingDirectory = AppContext.BaseDirectory
-                        }
-                    };
-                    psProcess.Start();
-                    await psProcess.WaitForExitAsync();
-                }
-            }
-            catch (Exception adbEx)
-            {
-                Debug.WriteLine($"CreateSharedConfigFile: Erreur lors de la copie via ADB: {adbEx.Message}");
-                // Ne pas bloquer si ADB ne fonctionne pas
-            }
-            
+            // IMPORTANT: L'email est maintenant transmis via Intent extras (plugin Android)
+            // Le fichier est créé comme solution de secours uniquement
+            Debug.WriteLine($"CreateSharedConfigFile: Fichier créé pour l'email: {email}");
+            Debug.WriteLine($"CreateSharedConfigFile: L'email est transmis via Intent extras (plugin Android)");
+            Debug.WriteLine($"CreateSharedConfigFile: Le fichier est créé comme solution de secours");
             Debug.WriteLine($"CreateSharedConfigFile: Contenu: {json}");
 #else
             // Pour Windows/Mac/Linux, utiliser le dossier temporaire

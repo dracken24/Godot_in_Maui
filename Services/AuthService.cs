@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace PlatformGame.Services;
 
-public class AuthService
+public class AuthService : IAuthService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiBaseUrl;
@@ -29,10 +29,10 @@ public class AuthService
         else
         {
 #if ANDROID
-            // Par défaut, utiliser l'IP de la machine (10.0.0.49)
-            // Si vous utilisez un émulateur et que 10.0.2.2 ne fonctionne pas,
-            // remplacez cette valeur par l'IP de votre machine (trouvez-la avec ipconfig)
-            _apiBaseUrl = "http://10.0.0.49:5000";
+            // Par défaut, utiliser l'IP de la machine
+            // IMPORTANT: Vérifiez votre IP avec 'ipconfig' et mettez-la dans .env si elle change
+            // L'IP par défaut est 192.168.2.169, mais peut varier selon votre réseau
+            _apiBaseUrl = "http://192.168.2.169:5000";
 #elif IOS || MACCATALYST
             _apiBaseUrl = "http://localhost:5000";
 #else
@@ -43,7 +43,7 @@ public class AuthService
         Debug.WriteLine($"AuthService: URL de l'API configurée: {_apiBaseUrl}");
         
         _httpClient.BaseAddress = new Uri(_apiBaseUrl);
-        _httpClient.Timeout = TimeSpan.FromSeconds(30);
+        _httpClient.Timeout = TimeSpan.FromSeconds(60); // Augmenté à 60 secondes pour être cohérent avec GameApiService
     }
 
     public async Task<AuthResponse?> LoginAsync(string email, string password)
@@ -243,6 +243,11 @@ public class AuthService
     {
         var token = await SecureStorage.Default.GetAsync("auth_token");
         return !string.IsNullOrEmpty(token);
+    }
+
+    public async Task<string?> GetUserEmailAsync()
+    {
+        return await SecureStorage.Default.GetAsync("user_email");
     }
 }
 

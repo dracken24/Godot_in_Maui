@@ -33,7 +33,7 @@ public partial class AppShell : Shell
             // Attendre un peu pour que le Handler soit complètement initialisé
             await Task.Delay(200);
             
-            var authService = Handler?.MauiContext?.Services.GetService<AuthService>();
+            var authService = Handler?.MauiContext?.Services.GetService<IAuthService>();
             if (authService != null)
             {
                 var isAuthenticated = await authService.IsAuthenticatedAsync();
@@ -61,7 +61,7 @@ public partial class AppShell : Shell
         // Protection de la route MainPage
         if (args.Target.Location.OriginalString.Contains(nameof(MainPage)))
         {
-            var authService = Handler?.MauiContext?.Services.GetService<AuthService>();
+            var authService = Handler?.MauiContext?.Services.GetService<IAuthService>();
             if (authService != null)
             {
                 var isAuthenticated = await authService.IsAuthenticatedAsync();
@@ -77,7 +77,7 @@ public partial class AppShell : Shell
 
     private async void OnLogoutClicked(object sender, EventArgs e)
     {
-        var authService = Handler?.MauiContext?.Services.GetService<AuthService>();
+        var authService = Handler?.MauiContext?.Services.GetService<IAuthService>();
         authService?.Logout();
         
         await DisplayAlert("Déconnexion", "Vous avez été déconnecté.", "OK");

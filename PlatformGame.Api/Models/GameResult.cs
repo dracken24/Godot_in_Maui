@@ -9,8 +9,8 @@ public class GameResult : BaseModel
     [PrimaryKey("id")]
     public Guid Id { get; set; }
     
-    [Column("email")]
-    public string? Email { get; set; }
+    [Column("username")]
+    public string? Username { get; set; }
     
     [Column("completion_time_ms")]
     public long CompletionTimeMs { get; set; }

@@ -17,16 +17,18 @@
                    HorizontalOptions="Center"
                    TextColor="{DynamicResource PrimaryColor}" />
 
-            <Entry x:Name="EmailEntry"
+            <Entry Text="{Binding Email}"
                    Placeholder="Email"
-                   Keyboard="Email" />
+                   Keyboard="Email"
+                   IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}" />
 
-            <Entry x:Name="PasswordEntry"
+            <Entry Text="{Binding Password}"
                    Placeholder="Mot de passe"
-                   IsPassword="True" />
+                   IsPassword="True"
+                   IsEnabled="{Binding IsLoading, Converter={StaticResource InvertedBoolConverter}}" />
 
             <Button Text="Se connecter"
-                    Clicked="OnLoginClicked"
+                    Command="{Binding LoginCommand}"
                     BackgroundColor="{DynamicResource PrimaryColor}"
                     TextColor="White"
                     CornerRadius="20"
@@ -37,7 +39,7 @@
                    TextColor="Gray" />
 
             <Button Text="S'inscrire"
-                    Clicked="OnSignUpClicked"
+                    Command="{Binding SignUpCommand}"
                     BackgroundColor="Gray"
                     TextColor="{DynamicResource PrimaryColor}"
                     BorderColor="{DynamicResource PrimaryColor}"
@@ -45,9 +47,8 @@
                     CornerRadius="20"
                     HeightRequest="50" />
             
-            <ActivityIndicator x:Name="LoadingIndicator"
-                               IsRunning="False"
-                               IsVisible="False"
+            <ActivityIndicator IsRunning="{Binding IsLoading}"
+                               IsVisible="{Binding IsLoading}"
                                Color="{DynamicResource PrimaryColor}" />
 
         </VerticalStackLayout>

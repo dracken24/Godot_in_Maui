@@ -63,7 +63,7 @@ public class GameResultsController : ControllerBase
             var results = response.Models.Select(r => new GameResultResponse
             {
                 Id = r.Id,
-                Email = r.Email,
+                Username = r.Username,
                 CompletionTimeMs = r.CompletionTimeMs,
                 CompletionTimeFormatted = r.CompletionTimeFormatted,
                 CreatedAt = r.CreatedAt,
@@ -107,7 +107,7 @@ public class GameResultsController : ControllerBase
             var result = new GameResultResponse
             {
                 Id = bestResult.Id,
-                Email = bestResult.Email,
+                Username = bestResult.Username,
                 CompletionTimeMs = bestResult.CompletionTimeMs,
                 CompletionTimeFormatted = bestResult.CompletionTimeFormatted,
                 CreatedAt = bestResult.CreatedAt,
@@ -146,7 +146,7 @@ public class GameResultsController : ControllerBase
             var results = response.Models.Select(r => new GameResultResponse
             {
                 Id = r.Id,
-                Email = r.Email,
+                Username = r.Username,
                 CompletionTimeMs = r.CompletionTimeMs,
                 CompletionTimeFormatted = r.CompletionTimeFormatted,
                 CreatedAt = r.CreatedAt,
@@ -168,20 +168,29 @@ public class GameResultsController : ControllerBase
     [HttpPost("results")]
     public async Task<ActionResult<GameResultResponse>> CreateResult([FromBody] CreateGameResultRequest request)
     {
+        if (request == null)
+        {
+            return BadRequest("La requête ne peut pas être nulle");
+        }
+
         if (request.CompletionTimeMs <= 0)
         {
             return BadRequest("Le temps de completion doit être supérieur à 0");
         }
 
+        if (string.IsNullOrWhiteSpace(request.Username))
+        {
+            return BadRequest("Le username est requis");
+        }
+
         try
         {
-            // Formater le temps (ex: convertir millisecondes en format "M:SS.mmm")
             var formattedTime = FormatTime(request.CompletionTimeMs);
 
             var gameResult = new GameResult
             {
                 Id = Guid.NewGuid(),
-                Email = request.Email,
+                Username = request.Username,
                 CompletionTimeMs = request.CompletionTimeMs,
                 CompletionTimeFormatted = formattedTime,
                 CreatedAt = DateTime.UtcNow,
@@ -202,7 +211,7 @@ public class GameResultsController : ControllerBase
             var result = new GameResultResponse
             {
                 Id = insertedResult.Id,
-                Email = insertedResult.Email,
+                Username = insertedResult.Username,
                 CompletionTimeMs = insertedResult.CompletionTimeMs,
                 CompletionTimeFormatted = insertedResult.CompletionTimeFormatted,
                 CreatedAt = insertedResult.CreatedAt,
@@ -214,26 +223,38 @@ public class GameResultsController : ControllerBase
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erreur lors de la création du résultat");
-            return StatusCode(500, "Erreur lors de la création du résultat");
+            return StatusCode(500, new { 
+                error = "Erreur lors de la création du résultat",
+                message = ex.Message,
+                details = _environment.IsDevelopment() ? ex.ToString() : null
+            });
         }
     }
 
     /// <summary>
     /// Récupère les statistiques (moyenne, nombre de tentatives, meilleur temps, etc.)
+    /// Optimisé avec timeout pour éviter les requêtes trop longues
     /// </summary>
     [HttpGet("stats")]
     public async Task<ActionResult<GameStatsResponse>> GetStats()
     {
+        // Timeout de 45 secondes pour cette requête
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(45));
+        
         try
         {
             var client = _supabaseService.GetClient();
-            var allResults = await client
-                .From<GameResult>()
-                .Get();
-
-            var results = allResults.Models.ToList();
             
-            if (!results.Any())
+            // Récupérer le meilleur résultat (optimisé avec Limit(1))
+            var bestResponse = await client
+                .From<GameResult>()
+                .Order(x => x.CompletionTimeMs, Supabase.Postgrest.Constants.Ordering.Ascending)
+                .Limit(1)
+                .Get(cts.Token);
+
+            var bestResult = bestResponse.Models.FirstOrDefault();
+            
+            if (bestResult == null)
             {
                 return Ok(new GameStatsResponse
                 {
@@ -246,8 +267,17 @@ public class GameResultsController : ControllerBase
                 });
             }
 
-            var bestResult = results.OrderBy(r => r.CompletionTimeMs).First();
-            var averageTimeMs = (long)results.Average(r => r.CompletionTimeMs);
+            // Récupérer seulement les completion_time_ms pour calculer la moyenne et le total
+            // OPTIMISATION FUTURE: Créer une fonction SQL dans Supabase pour calculer les stats directement
+            // Voir le fichier create_stats_function.sql pour l'implémentation optimale
+            var allTimesResponse = await client
+                .From<GameResult>()
+                .Select("completion_time_ms")
+                .Get(cts.Token);
+
+            var allTimes = allTimesResponse.Models.Select(r => r.CompletionTimeMs).ToList();
+            var totalAttempts = allTimes.Count;
+            var averageTimeMs = totalAttempts > 0 ? (long)allTimes.Average() : 0;
 
             var stats = new GameStatsResponse
             {
@@ -255,11 +285,11 @@ public class GameResultsController : ControllerBase
                 BestTimeFormatted = bestResult.CompletionTimeFormatted,
                 AverageTimeMs = averageTimeMs,
                 AverageTimeFormatted = FormatTime(averageTimeMs),
-                TotalAttempts = results.Count,
+                TotalAttempts = totalAttempts,
                 BestResult = new GameResultResponse
                 {
                     Id = bestResult.Id,
-                    Email = bestResult.Email,
+                    Username = bestResult.Username,
                     CompletionTimeMs = bestResult.CompletionTimeMs,
                     CompletionTimeFormatted = bestResult.CompletionTimeFormatted,
                     CreatedAt = bestResult.CreatedAt,
@@ -268,6 +298,14 @@ public class GameResultsController : ControllerBase
             };
 
             return Ok(stats);
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogWarning("Timeout lors de la récupération des statistiques");
+            return StatusCode(408, new { 
+                error = "Timeout",
+                message = "La requête a pris trop de temps. La base de données contient peut-être trop de résultats."
+            });
         }
         catch (Exception ex)
         {

@@ -80,9 +80,33 @@ namespace PlatformGame
                 builder.Logging.AddDebug();
 #endif
 
-                // Enregistrer les services
-                builder.Services.AddSingleton<GameApiService>();
-                builder.Services.AddSingleton<AuthService>();
+                // Enregistrer les services (interfaces et implémentations)
+                builder.Services.AddSingleton<IAuthService, AuthService>();
+                builder.Services.AddSingleton<IGameApiService, GameApiService>();
+                builder.Services.AddSingleton<INavigationService, NavigationService>();
+                builder.Services.AddSingleton<IGodotLauncherService, GodotLauncherService>();
+
+                // Enregistrer les ViewModels
+                builder.Services.AddTransient<ViewModels.MainPageViewModel>();
+                builder.Services.AddTransient<ViewModels.LoginPageViewModel>();
+                builder.Services.AddTransient<ViewModels.SignUpPageViewModel>();
+
+                // Enregistrer les pages avec leurs ViewModels
+                builder.Services.AddTransient<MainPage>(serviceProvider =>
+                {
+                    var viewModel = serviceProvider.GetRequiredService<ViewModels.MainPageViewModel>();
+                    return new MainPage(viewModel);
+                });
+                builder.Services.AddTransient<Views.LoginPage>(serviceProvider =>
+                {
+                    var viewModel = serviceProvider.GetRequiredService<ViewModels.LoginPageViewModel>();
+                    return new Views.LoginPage(viewModel);
+                });
+                builder.Services.AddTransient<Views.SignUpPage>(serviceProvider =>
+                {
+                    var viewModel = serviceProvider.GetRequiredService<ViewModels.SignUpPageViewModel>();
+                    return new Views.SignUpPage(viewModel);
+                });
 
                 var app = builder.Build();
                 Debug.WriteLine("MauiProgram: Application créée avec succès");

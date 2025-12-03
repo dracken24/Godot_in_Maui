@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace PlatformGame.Services;
 
-public class GameApiService
+public class GameApiService : IGameApiService
 {
     private readonly HttpClient _httpClient;
     private readonly string _apiBaseUrl;
@@ -31,10 +31,10 @@ public class GameApiService
         {
             // Valeurs par défaut selon la plateforme
 #if ANDROID
-            // Par défaut, utiliser l'IP de la machine (10.0.0.49)
-            // Si vous utilisez un émulateur et que 10.0.2.2 ne fonctionne pas,
-            // remplacez cette valeur par l'IP de votre machine (trouvez-la avec ipconfig)
-            _apiBaseUrl = "http://10.0.0.49:5000";
+            // Par défaut, utiliser l'IP de la machine
+            // IMPORTANT: Vérifiez votre IP avec 'ipconfig' et mettez-la dans .env si elle change
+            // L'IP par défaut est 192.168.2.169, mais peut varier selon votre réseau
+            _apiBaseUrl = "http://192.168.2.169:5000";
 #elif IOS || MACCATALYST
             _apiBaseUrl = "http://localhost:5000";
 #else
@@ -46,7 +46,7 @@ public class GameApiService
         Debug.WriteLine($"GameApiService: URL de l'API configurée: {_apiBaseUrl}");
         
         _httpClient.BaseAddress = new Uri(_apiBaseUrl);
-        _httpClient.Timeout = TimeSpan.FromSeconds(30);
+        _httpClient.Timeout = TimeSpan.FromSeconds(60); // Augmenté à 60 secondes pour les requêtes lourdes
         
         // Ajouter des en-têtes pour le débogage
         _httpClient.DefaultRequestHeaders.Add("User-Agent", "PlatformGame-MAUI/1.0");
@@ -215,7 +215,7 @@ public class GameApiService
 public class GameResultResponse
 {
     public Guid Id { get; set; }
-    public string? Email { get; set; }
+    public string? Username { get; set; }
     public long CompletionTimeMs { get; set; }
     public string CompletionTimeFormatted { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
@@ -225,7 +225,7 @@ public class GameResultResponse
 public class CreateGameResultRequest
 {
     public long CompletionTimeMs { get; set; }
-    public string? Email { get; set; }
+    public string? Username { get; set; }
     public string? Platform { get; set; }
 }
 
